@@ -5,6 +5,13 @@ using UnityEngine.InputSystem;
 public class FirstPersonController : MonoBehaviour
 {
     public float speed = 5f; // Velocidade do jogador
+    
+    public float Stamina;
+    public float MaxStamina = 100f;
+    public bool Cooldown_Stamina = false;
+
+    public bool IsSprinting;
+
     public float gravity = 9.81f; // Gravidade
 
     [Header("Configurações de Câmera")]
@@ -23,12 +30,14 @@ public class FirstPersonController : MonoBehaviour
         
         Cursor.lockState = CursorLockMode.Locked; // Trava o mouse
         Cursor.visible = false; // Esconde o mouse
+        Stamina = MaxStamina; // Começa com stamina cheia
     } 
 
     void Update()
     {
         MovePlayer();
         Look(); // Adicionei a chamada aqui para funcionar!
+        Sprint();
     }
 
     void MovePlayer()
@@ -69,4 +78,19 @@ public class FirstPersonController : MonoBehaviour
 
         playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
-}
+
+    void Sprint(){
+        IsSprinting = Keyboard.current.shiftKey.isPressed;
+
+        if(IsSprinting && Stamina > 0 && Cooldown_Stamina == false){
+            speed = 10f;
+            Stamina -= 10f * Time.deltaTime;
+            if(Stamina <= 0) Cooldown_Stamina = true;
+        }else{
+            speed = 5f;
+            Stamina += 10f * Time.deltaTime;
+            if(Stamina >= MaxStamina) Cooldown_Stamina = false;
+        }
+        Stamina = Mathf.Clamp(Stamina, 0f, MaxStamina);
+    }
+} 
