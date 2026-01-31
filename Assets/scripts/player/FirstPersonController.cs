@@ -4,26 +4,25 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class FirstPersonController : MonoBehaviour
 {
-    public float speed = 5f;
-    public float gravity = 9.81f;
+    public float speed = 5f; // Velocidade do jogador
+    public float gravity = 9.81f; // Gravidade
 
     [Header("Configurações de Câmera")]
-    public float mouseSensitivity = 20f;
-    public float upLimit = -90f; // Mudei para negativo para limitar o olhar para cima
-    public float downLimit = 90f;
+    public float mouseSensitivity = 20f; // Sensibilidade do mouse
+    public float upLimit = -90f; // Limite de rotação da câmera para cima
+    public float downLimit = 90f; // Limite de rotação da câmera para baixo
     
-    private float xRotation = 0f;
+    private float xRotation = 0f; // Rotação da câmera
     private Camera playerCamera; // Guardamos a referência da câmera aqui
-    private CharacterController controller;
+    private CharacterController controller; // Controla o movimento do jogador
 
     void Awake()
     {
-        controller = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>(); // Pega o CharacterController
         playerCamera = Camera.main; // Pega a câmera principal automaticamente
         
-        // CORREÇÃO: É Cursor (com 'r' no final e C maiúsculo)
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked; // Trava o mouse
+        Cursor.visible = false; // Esconde o mouse
     } 
 
     void Update()
@@ -38,20 +37,20 @@ public class FirstPersonController : MonoBehaviour
         
         if (Keyboard.current != null)
         {
-            if (Keyboard.current.wKey.isPressed) input.y += 1;
-            if (Keyboard.current.sKey.isPressed) input.y -= 1;
-            if (Keyboard.current.aKey.isPressed) input.x -= 1;
-            if (Keyboard.current.dKey.isPressed) input.x += 1;
+            if (Keyboard.current.wKey.isPressed) input.y += 1; // Movimento para frente
+            if (Keyboard.current.sKey.isPressed) input.y -= 1; // Movimento para trás
+            if (Keyboard.current.aKey.isPressed) input.x -= 1; // Movimento para a esquerda
+            if (Keyboard.current.dKey.isPressed) input.x += 1; // Movimento para a direita
         }
 
         Vector3 move = transform.right * input.x + transform.forward * input.y;
 
-        if (move.magnitude > 1) move.Normalize();
+        if (move.magnitude > 1) move.Normalize(); // Normaliza o movimento
 
-        controller.Move(move * speed * Time.deltaTime);
+        controller.Move(move * speed * Time.deltaTime); // Move o jogador
         
         if (!controller.isGrounded)
-            controller.Move(Vector3.down * gravity * Time.deltaTime);
+            controller.Move(Vector3.down * gravity * Time.deltaTime); // Aplica a gravidade
     }
 
     void Look()
