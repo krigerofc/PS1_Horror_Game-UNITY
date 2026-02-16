@@ -5,10 +5,6 @@ using UnityEngine.InputSystem;
 public class FirstPersonController : MonoBehaviour
 {
     public float speed = 5f; // Velocidade do jogador
-    
-    public float Stamina;
-    public float MaxStamina = 100f;
-    public bool Cooldown_Stamina = false;
 
     public bool IsSprinting;
 
@@ -22,15 +18,16 @@ public class FirstPersonController : MonoBehaviour
     private float xRotation = 0f; // Rotação da câmera
     private Camera playerCamera; // Guardamos a referência da câmera aqui
     private CharacterController controller; // Controla o movimento do jogador
+    private PlayerStatus playerStatus; // Referência ao sistema de status
 
     void Awake()
     {
         controller = GetComponent<CharacterController>(); // Pega o CharacterController
         playerCamera = Camera.main; // Pega a câmera principal automaticamente
+        playerStatus = GetComponent<PlayerStatus>(); // Pega o PlayerStatus
         
         Cursor.lockState = CursorLockMode.Locked; // Trava o mouse
         Cursor.visible = false; // Esconde o mouse
-        Stamina = MaxStamina; // Começa com stamina cheia
     } 
 
     void Update()
@@ -82,15 +79,13 @@ public class FirstPersonController : MonoBehaviour
     void Sprint(){
         IsSprinting = Keyboard.current.shiftKey.isPressed;
 
-        if(IsSprinting && Stamina > 0 && Cooldown_Stamina == false){
+        if(IsSprinting && playerStatus.CanUseStamina()){
             speed = 10f;
-            Stamina -= 10f * Time.deltaTime;
-            if(Stamina <= 0) Cooldown_Stamina = true;
+            playerStatus.ConsumeStamina(10f);
         }else{
             speed = 5f;
-            Stamina += 10f * Time.deltaTime;
-            if(Stamina >= MaxStamina) Cooldown_Stamina = false;
+            playerStatus.RegenerateStamina(10f);
         }
-        Stamina = Mathf.Clamp(Stamina, 0f, MaxStamina);
     }
 } 
+
